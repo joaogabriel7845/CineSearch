@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Buscador de Filmes</title>
+</head>
+
+<body>
+
+    <main>
+
+        <nav>
+            <ul>
+
+                <li>
+                    <button id="homeBtn"><i class="bi bi-house"></i></button>
+                </li>
+
+                <div class="info-msg-nav">
+                    <p>Busque informações sobre qualquer Filme !</p> 
+                </div>
+
+                <li>
+                    <button id="githubBtn"><a target="_blank" href="https://github.com/joaogabriel7845"><i
+                                class="bi bi-github"></i></a></button>
+                </li>
+
+            </ul>
+
+        </nav>
+
+
+        <!-- Página com mais Filmes -->
+        <div class="more-movies-grid hidden">
+
+            <div class="input-container-movies-grid">
+                <input type="text" id="searchInput" placeholder="Procure um Filme">
+                <button id="searchBtn"><i class="bi bi-search"></i></button>
+            </div>
+
+            <div class="container-grid-movies">
+
+                <div class="no-result-search-container hidden">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <p>Resultado não encontrado.</p>
+                </div>
+
+                <div class="movie-grid"></div>
+            </div>
+
+            <div class="loading-container-movies">
+                <button class="loading-more-btn" id="loadingMoreMoviesGrid">Carregar Mais</button>
+            </div>
+
+        </div>
+
+        <!-- Página de detalhes do Filme -->
+        <div class="details-page hidden">
+
+
+            <div class="detail-backdrop">
+
+            </div>
+
+            <div class="detail-foreground">
+                <button id="backBtn"><i class="bi bi-arrow-left"></i></button>
+                <div class="detail-content">
+
+                    <div class="detail-info">
+
+                        <div class="detail-info-flex1">
+
+                            <div class="title-and-poster-column">
+                                <h2 class="detail-title"></h2>
+                                <div class="card-poster-container"><img src="" alt="" class="detail-poster"></div>
+                                <p class="detail-meta"></p>
+                            </div>
+
+                            <div class="content-info">
+
+                                <div class="container-overview">
+                                    <h2>Sobre:</h2>
+                                    <p class="detail-overview"></p>
+                                </div>
+
+
+                                <div class="swiper">
+
+                                    <div class="swiper-wrapper"></div>
+
+                                    <button class="prev"><i class="bi bi-caret-left-fill"></i></button>
+                                    <button class="next"><i class="bi bi-caret-right-fill   "></i></button>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <!-- Página Inicial -->
+        <div class="content-container">
+
+            <div class="title-card">
+                <h1>Bem vindo ao Buscador de Filmes !</h1>
+                <div class="input-container">
+                    <input id="searchInputHome" type="text" placeholder="Procure um Filme">
+                    <button id="searchBtnHome"><i class="bi bi-search"></i></button>
+                </div>
+            </div>
+
+
+            <div class="movies-container">
+
+                <div class="slider">
+
+                    <div class="slide-track"></div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div class="loading-container">
+            <button class="loading-more-btn" id="loadingMore">Ver Filmes</button>
+        </div>
+
+
+
+    </main>
+
+    <!-- Notificação de Erro -->
+    <div class="toast-container hidden" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast">
+            <div class="toast-body">
+                Busca inválida
+            </div>
+            <button type="button" class="btn-close-toast" id="btnCloseToast" aria-label="Close"><i
+                    class="bi bi-x-lg"></i></button>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
