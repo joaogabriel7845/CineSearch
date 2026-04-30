@@ -14,6 +14,7 @@ const searchBtnHome = document.getElementById("searchBtnHome")
 const notFoundContainer = document.querySelector(".no-result-search-container")
 const containerAreaNotFound = document.querySelector(".container-grid-movies")
 const toastContainer = document.querySelector(".toast-container")
+const toastBody = document.querySelector(".toast-body")
 const btnCloseToast = document.getElementById("btnCloseToast")
 const detailsPage = document.querySelector(".details-page")
 const backBtnDetailsPage = document.getElementById("backBtn")
@@ -27,6 +28,10 @@ const detailOverview = document.querySelector(".detail-overview")
 const detailRating = document.querySelector(".detail-rating")
 const detailMeta = document.querySelector(".detail-meta")
 const swiperWrapper = document.querySelector(".swiper-wrapper")
+const modalLoadBtn = document.getElementById("modalLoadBtn")
+const modalClose = document.querySelector(".modal-close")
+const modalTrailer = document.querySelector(".modal-trailer")
+const trailerFrame = document.getElementById("trailerFrame")
 const IMG_URL = "https://image.tmdb.org/t/p/w500"
 const IMG_URL_BACKDROP = "https://image.tmdb.org/t/p/original"
 
@@ -38,6 +43,7 @@ let pesquisaInicial = ""
 let termoPesquisa = ""
 let castSwiper = null
 let filmesExibidos = new Set()
+let filmeAtualId = null
 
 
 // FUNÇÕES 
@@ -47,6 +53,11 @@ async function init() {
     exibirPoster(filmes)
 }
 
+async function fetchFilmes(url) {
+    const r = await fetch(url)
+    return await r.json()
+}
+
 async function buscarFilmes(nameMovie) {
 
     paginaAtual = 1
@@ -54,14 +65,18 @@ async function buscarFilmes(nameMovie) {
     gridContainerMovies.innerHTML = ""
     filmesExibidos.clear()
 
-
     let moviesValidos = []
 
     while (moviesValidos.length < 20) {
-        const r = await fetch(`https://api.themoviedb.org/3/search/movie?query=${nameMovie}&api_key=${API_KEY}&language=pt-BR&region=BR&page=${paginaAtual}&include_adult=false`)
-        const dados = await r.json()
+        // const r = await fetch(`https://api.themoviedb.org/3/search/movie?query=${nameMovie}&api_key=${API_KEY}&language=pt-BR&region=BR&page=${paginaAtual}&include_adult=false`)
+        // const dados = await r.json()
 
-        if (!dados.results.length) break
+        const dados = await fetchFilmes(urlBusca())
+
+        if (!dados.results.length) {
+            loadingMoreMoviesGrid.classList.add("hidden-btn")
+            break
+        }
 
         const filtrados = dados.results.filter(f =>
             f.poster_path && f.overview !== "" && !filmesExibidos.has(f.id)
@@ -70,6 +85,7 @@ async function buscarFilmes(nameMovie) {
         moviesValidos = [...moviesValidos, ...filtrados]
 
         if (moviesValidos.length < 20) paginaAtual++
+        console.log(dados)
 
     }
     if (moviesValidos.length === 0) {
@@ -80,7 +96,7 @@ async function buscarFilmes(nameMovie) {
     } else {
         exibirFilmes(moviesValidos.slice(0, 20))
         searchInput.value = termoPesquisa
-        gridContainerMovies.style.display = "grid"
+        gridContainerMovies.style.display = "flex"
         notFoundContainer.classList.add("hidden")
         loadingMoreMoviesGrid.classList.remove("hidden-btn")
     }
@@ -94,8 +110,10 @@ async function popularMovies() {
     let filmesValidos = []
 
     while (filmesValidos.length < 20) {
-        const r = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR&region=BR&page=${paginaAtual}&include_adult=false`)
-        const dados = await r.json()
+        // const r = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR&region=BR&page=${paginaAtual}&include_adult=false`)
+        // const dados = await r.json()
+
+        const dados = await fetchFilmes(urlPopulares())
 
         const filtrados = dados.results.filter(f =>
             f.poster_path && f.overview !== "" && !filmesExibidos.has(f.id)
@@ -104,6 +122,7 @@ async function popularMovies() {
         filmesValidos = [...filmesValidos, ...filtrados]
 
         if (filmesValidos.length < 20) paginaAtual++
+
     }
 
     // Garante que os filmes que passaram pela verificação sempre preencha o espaço de 20 filmes por página
@@ -166,14 +185,16 @@ async function addMoviesOnGrid() {
     if (termoPesquisa === "") {
         filmes = await popularMovies()
     } else {
-        
+
         let moviesValidos = []
 
         while (moviesValidos.length < 20) {
-            const r = await fetch(`https://api.themoviedb.org/3/search/movie?query=${termoPesquisa}&api_key=${API_KEY}&language=pt-BR&region=BR&page=${paginaAtual}&include_adult=false`)
-            const dados = await r.json()
+            const dados = await fetchFilmes(urlBusca())
 
-            if (!dados.results.length) break
+            if (!dados.results.length) {
+                loadingMoreMoviesGrid.classList.add("hidden-btn")
+                break
+            }
 
             const filtrados = dados.results.filter(f =>
                 f.poster_path && f.overview !== "" && !filmesExibidos.has(f.id)
@@ -186,6 +207,7 @@ async function addMoviesOnGrid() {
         }
 
         filmes = moviesValidos.slice(0, 20)
+
     }
 
     exibirFilmes(filmes)
@@ -209,7 +231,9 @@ function verMaisFilmes() {
 
 }
 
-function showToast() {
+function showToast(erro) {
+
+    toastBody.innerHTML = `${(erro)}`
 
     toastContainer.classList.remove("hidden", "toast-show", "toast-hide")
     toastContainer.classList.add("toast-show")
@@ -218,7 +242,9 @@ function showToast() {
         toastContainer.classList.remove("hidden")
         toastContainer.classList.add("toast-hide")
     }, 2000)
+
 }
+
 
 function formatarDuracao(minutos) {
     const horas = Math.floor(minutos / 60)
@@ -233,9 +259,35 @@ loadingMoreBtn.addEventListener("click", verMaisFilmes)
 
 loadingMoreMoviesGrid.addEventListener("click", addMoviesOnGrid)
 
+modalLoadBtn.addEventListener("click", async () => {
+
+    let videos = await fetchFilmes(urlTrailer(filmeAtualId))
+
+    if (!videos.results.length) {
+        videos = await fetchFilmes(urlTrailerFallback(filmeAtualId))
+
+        if (!videos.results.length) {
+            showToast("Não foi possivel encontrar o trailer")
+        }
+    }
+
+    const trailer = videos.results.find(v => v.type === "Trailer" && v.site === "YouTube")
+
+    if (trailer) {
+        trailerFrame.src = `https://www.youtube.com/embed/${trailer.key}`
+        modalTrailer.classList.remove("hidden")
+        detailsPage.style.overflowY = "auto"
+    }
+
+})
+
+
 gridContainerMovies.addEventListener("click", async function (e) {
 
     const card = e.target.closest(".card-movie")
+    document.body.style.overflow = "hidden"
+
+
 
     if (!card) return
 
@@ -248,16 +300,17 @@ gridContainerMovies.addEventListener("click", async function (e) {
     }
 
     const id = card.dataset.id
+    filmeAtualId = id
 
-    const r = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=pt-BR&region=BR&include_adult=false`)
-    const filme = await r.json()
+    // Detalhes dos filmes
+    const filme = await fetchFilmes(urlDetalhes(id))
 
     console.log(filme)
 
-
-    const rCredits = await fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${API_KEY}&language=pt-BR&region=BR`)
-    const credits = await rCredits.json()
+    // Elenco dos filmes
+    const credits = await fetchFilmes(urlCreditos(id))
     const elenco = credits.cast
+
 
     elenco.forEach(actor => {
 
@@ -285,7 +338,7 @@ gridContainerMovies.addEventListener("click", async function (e) {
     detailPoster.src = `${IMG_URL}${filme.poster_path}`
     detailTitle.innerHTML = `${filme.title}`
     detailOverview.innerHTML = `${filme.overview}`
-    detailMeta.innerHTML = `${filme.release_date.slice(0, 4)} • ${formatarDuracao(filme.runtime)} • ${Number(filme.vote_average).toFixed(2)} ⭐`
+    detailMeta.innerHTML = `${filme.release_date.slice(0, 4)} | ${formatarDuracao(filme.runtime)} | ${Number(filme.vote_average).toFixed(2)} <i class="bi bi-star-fill" style="color: rgb(255, 217, 0);"></i>`
 
     castSwiper = new Swiper('.swiper', {
 
@@ -334,13 +387,15 @@ gridContainerMovies.addEventListener("click", async function (e) {
     });
 
 
-
-
 })
 
 backBtnDetailsPage.addEventListener("click", () => {
     detailsPage.classList.add("hidden")
     swiperWrapper.innerHTML = ""
+    document.body.style.overflow = ""
+    trailerFrame.src = ""
+    detailsPage.style.overflowY = "hidden"
+    modalTrailer.classList.add("hidden")
 
 })
 
@@ -349,7 +404,7 @@ searchInputHome.addEventListener("keydown", (e) => {
 
     if (e.key === "Enter") {
         if (searchInputHome.value.trim() === "") {
-            showToast()
+            showToast("Busca Inválida")
             return
         }
         const termo = searchInputHome.value.trim()
@@ -365,7 +420,7 @@ searchInputHome.addEventListener("keydown", (e) => {
 searchBtnHome.addEventListener("click", () => {
 
     if (searchInputHome.value.trim() === "") {
-        showToast()
+        showToast("Busca Inválida")
         return
     }
     const termo = searchInputHome.value.trim()
@@ -381,7 +436,7 @@ searchInput.addEventListener("keydown", (e) => {
 
     if (e.key === "Enter") {
         if (searchInput.value.trim() === "") {
-            showToast()
+            showToast("Busca Inválida")
             return
         } else {
             buscarFilmes(searchInput.value)
@@ -390,6 +445,11 @@ searchInput.addEventListener("keydown", (e) => {
 })
 
 searchBtn.addEventListener("click", () => {
+
+    if (searchInput.value.trim() === "") {
+        showToast("Busca Inválida")
+        return
+    }
 
     gridContainerMovies.innerHTML = ""
     console.log(searchInput.value)
@@ -405,7 +465,7 @@ btnHome.addEventListener("click", () => {
     moreMoviesGrid.classList.add("hidden")
     loadingContainerBtnHome.classList.remove("hidden")
     notFoundContainer.classList.add("hidden")
-    gridContainerMovies.style.display = "grid"
+    gridContainerMovies.style.display = "flex"
     filmesExibidos.clear()
 
 
