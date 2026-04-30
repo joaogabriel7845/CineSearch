@@ -67,6 +67,8 @@ const API_KEY = 'sua_chave_aqui'
 
 Para obter sua chave gratuita, crie uma conta em [themoviedb.org](https://www.themoviedb.org/) e acesse **Configurações → API**.
 
+> ⚠️ Chaves da TMDB são gratuitas e de baixo risco, mas evite commitar chaves de serviços pagos como AWS ou Stripe.
+
 ---
 
 ## 📱 Responsividade
