@@ -282,6 +282,7 @@ modalLoadBtn.addEventListener("click", async () => {
 })
 
 
+
 gridContainerMovies.addEventListener("click", async function (e) {
 
     const card = e.target.closest(".card-movie")
