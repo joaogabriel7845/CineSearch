@@ -286,11 +286,9 @@ modalLoadBtn.addEventListener("click", async () => {
 gridContainerMovies.addEventListener("click", async function (e) {
 
     const card = e.target.closest(".card-movie")
-    document.body.style.overflow = "hidden"
-
-
-
+    
     if (!card) return
+    document.body.style.overflow = "hidden"
 
     swiperWrapper.innerHTML = ""
     detailBackdrop.innerHTML = ""
@@ -395,8 +393,9 @@ backBtnDetailsPage.addEventListener("click", () => {
     swiperWrapper.innerHTML = ""
     document.body.style.overflow = ""
     trailerFrame.src = ""
-    detailsPage.style.overflowY = "hidden"
     modalTrailer.classList.add("hidden")
+    detailsPage.style.overflowY = ""
+    document.body.style.overflowY = ""
 
 })
 

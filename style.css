@@ -723,7 +723,7 @@ main {
     }
 
     .details-page {
-        overflow-y: auto;
+        overflow-y: scroll;
     }
 
     .title-and-poster-column {
