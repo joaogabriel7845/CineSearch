@@ -85,7 +85,6 @@ async function buscarFilmes(nameMovie) {
         moviesValidos = [...moviesValidos, ...filtrados]
 
         if (moviesValidos.length < 20) paginaAtual++
-        console.log(dados)
 
     }
     if (moviesValidos.length === 0) {
@@ -146,8 +145,6 @@ function exibirFilmes(filmes) {
         div.classList.add("card-movie")
 
         div.innerHTML = `<img src="${IMG_URL}${posterMovie}" alt="${filme.title}">`
-        console.log(paginaAtual)
-
 
         gridContainerMovies.appendChild(div)
     })
@@ -201,7 +198,6 @@ async function addMoviesOnGrid() {
             )
 
             moviesValidos = [...moviesValidos, ...filtrados]
-            console.log(moviesValidos)
 
             if (moviesValidos.length < 20) paginaAtual++
         }
@@ -303,8 +299,6 @@ gridContainerMovies.addEventListener("click", async function (e) {
 
     // Detalhes dos filmes
     const filme = await fetchFilmes(urlDetalhes(id))
-
-    console.log(filme)
 
     // Elenco dos filmes
     const credits = await fetchFilmes(urlCreditos(id))
@@ -452,7 +446,6 @@ searchBtn.addEventListener("click", () => {
     }
 
     gridContainerMovies.innerHTML = ""
-    console.log(searchInput.value)
     buscarFilmes(searchInput.value)
 })
 
