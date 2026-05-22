@@ -456,6 +456,7 @@ btnHome.addEventListener("click", () => {
 
     contentContainer.style.display = "flex"
     moreMoviesGrid.classList.add("hidden")
+    loadingMoreMoviesGrid.classList.remove("hidden-btn")
     loadingContainerBtnHome.classList.remove("hidden")
     notFoundContainer.classList.add("hidden")
     gridContainerMovies.style.display = "flex"
